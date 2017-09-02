@@ -1,6 +1,6 @@
 
 rawdata <- read.csv("c:\\Users\\Chocho\\Desktop\\Analisis de Datos\\Laboratorio\\Lab 1\\allhypo_filtered.csv", header=TRUE, stringsAsFactors=FALSE)
-data <- rawdata[(rawdata$age!="?" & rawdata$TSH.measured=="t" & rawdata$T3.measured=="t" & rawdata$TT4.measured=="t" & rawdata$T4U.measured=="t" & rawdata$FTI.measured=="t"),]
+data <- rawdata[(rawdata$age!="?" & rawdata$sex != "?" & rawdata$TSH.measured=="t" & rawdata$T3.measured=="t" & rawdata$TT4.measured=="t" & rawdata$T4U.measured=="t" & rawdata$FTI.measured=="t"),]
 
 #Clean state
 d <- c()
