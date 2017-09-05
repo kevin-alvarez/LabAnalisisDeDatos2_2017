@@ -1,4 +1,7 @@
+library("ggplot2")
+library("modeest")
 
+#Escribir direccion del archivo
 rawdata <- read.csv("c:\\Users\\Chocho\\Desktop\\Analisis de Datos\\Laboratorio\\Lab 1\\allhypo_filtered.csv", header=TRUE, stringsAsFactors=FALSE)
 data <- rawdata[(rawdata$age!="?" & rawdata$sex != "?" & rawdata$TSH.measured=="t" & rawdata$T3.measured=="t" & rawdata$TT4.measured=="t" & rawdata$T4U.measured=="t" & rawdata$FTI.measured=="t"),]
 
@@ -49,25 +52,25 @@ moda_FTI <- mlv(FTI,method = "mfv")[1]
 
 #Plots (package: ggplot2)
 #Gráfico clasificacion de la muestra.
-p1 <- ggplot(data, aes(data$state))+geom_bar()+theme_bw()+scale_fill_brewer(palette = "Set1")
+p1 <- ggplot(data, aes(data$state))+geom_bar()+theme_bw()+scale_fill_brewer(palette = "Set1")+ggtitle("Classification")+theme(plot.title = element_text(hjust = 0.5))
 
 #State vs sex
-p2 <- ggplot(data, aes(data$state, fill = data$sex))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")
+p2 <- ggplot(data, aes(data$state, fill = data$sex))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")+ggtitle("Class vs Sex")+theme(plot.title = element_text(hjust = 0.5))
 
 #State vs pregnant
-p3 <- ggplot(data, aes(data$state, fill = data$pregnant))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")
+p3 <- ggplot(data, aes(data$state, fill = data$pregnant))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")+ggtitle("Class vs Pregnant")+theme(plot.title = element_text(hjust = 0.5))
 
 #State vs thyroid.surgery
-p4 <- ggplot(data, aes(data$state, fill = data$thyroid.surgery))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")
+p4 <- ggplot(data, aes(data$state, fill = data$thyroid.surgery))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")+ggtitle("Class vs Thyroid Surgery")+theme(plot.title = element_text(hjust = 0.5))
 
 #State vs I131.treatment
-p5 <- ggplot(data, aes(data$state, fill = data$I131.treatment))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")
+p5 <- ggplot(data, aes(data$state, fill = data$I131.treatment))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")+ggtitle("Class vs I131 Treatment")+theme(plot.title = element_text(hjust = 0.5))
 
 #State vs lithium
-p6 <- ggplot(data, aes(data$state, fill = data$lithium))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")
+p6 <- ggplot(data, aes(data$state, fill = data$lithium))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")+ggtitle("Class vs Lithium")+theme(plot.title = element_text(hjust = 0.5))
 
 #State vs goitre
-p7 <- ggplot(data, aes(data$state, fill = data$goitre))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")
+p7 <- ggplot(data, aes(data$state, fill = data$goitre))+geom_bar(position = position_dodge())+theme_bw()+scale_fill_brewer(palette = "Paired")+ggtitle("Class vs Goitre")+theme(plot.title = element_text(hjust = 0.5))
 
 
 #Correlation
