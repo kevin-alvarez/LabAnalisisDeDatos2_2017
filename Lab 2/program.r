@@ -30,11 +30,11 @@ data$referral.source <- NULL
 data$clasification <- NULL
 
 # Se limpian los datos de acuerdo a un rango de valores máximos
-TSHMAX <- 4.0 + abs(0.4 - 4.0) * 3
-T3MAX <-  3.37 + abs(1.07 - 3.37) * 3
-TT4MAX <- 164 + abs(64 - 164) * 3
-T4UMAX <- 1.8 + abs(0.7 - 1.8) * 3
-FTIMAX <- 1.8 + abs(33.108 - 135.191) * 3
+TSHMAX <- 4.0 + abs(0.4 - 4.0) * 2
+T3MAX <-  3.37 + abs(1.07 - 3.37) * 2
+TT4MAX <- 164 + abs(64 - 164) * 2
+T4UMAX <- 1.8 + abs(0.7 - 1.8) * 2
+FTIMAX <- 1.8 + abs(33.108 - 135.191) * 2
 EstudioLimpiado <- subset(data, as.numeric(as.character(age)) <= 100 & (as.numeric(as.character(TSH)) <= TSHMAX) & (as.numeric(as.character(T3)) <= T3MAX) & (as.numeric(as.character(TT4)) <= TT4MAX) & (as.numeric(as.character(T4U)) <= T4UMAX) & (as.numeric(as.character(FTI)) <= FTIMAX))
 
 
