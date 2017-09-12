@@ -18,6 +18,7 @@ data <- rawdata[(rawdata$age!="?" & rawdata$sex!="?" & rawdata$on.thyroxine!="?"
 data$TBG.measured <- NULL
 data$TBG <- NULL
 #Delete measuring variables
+
 data$TSH.measured <- NULL
 data$T3.measured <- NULL
 data$TT4.measured <- NULL
@@ -28,5 +29,14 @@ data$referral.source <- NULL
 #Delete clasification variable
 data$clasification <- NULL
 
+# Se limpian los datos de acuerdo a un rango de valores máximos
+TSHMAX <- 4.0 + abs(0.4 - 4.0) * 3
+T3MAX <-  3.37 + abs(1.07 - 3.37) * 3
+TT4MAX <- 164 + abs(64-164) * 3
+T4UMAX <- 1.8 + abs(0.7 - 1.8) * 3
+EstudioLimpiado <- subset(data, as.numeric(as.character(age)) <= 100 & (as.numeric(as.character(TSH)) <= TSHMAX) & (as.numeric(as.character(T3)) <= T3MAX) & (as.numeric(as.character(TT4)) <= TT4MAX) & (as.numeric(as.character(T4U)) <= T4UMAX))
+
+
 #groups <- 6
 #cluster <- pam(rawdata, groups, metric = "euclidean")
+
