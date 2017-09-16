@@ -82,5 +82,12 @@ data_cluster <- pam(data_dist, diss = TRUE, k = 3)
 
 #t-SNE plot
 tsne <- Rtsne(data_dist, is_distance = TRUE)
-ggplot(data.frame(tsne$Y), aes(x = X1, y = X2))+labs(x = "X", y = "Y")+geom_point(color = factor(data_cluster$clustering))
+plot_groups <- ggplot(data.frame(tsne$Y), aes(x = X1, y = X2))+labs(x = "X", y = "Y")+geom_point(color = factor(data_cluster$clustering))
+
+#Adding a new column with the cluster number
+data["cluster"] <- data_cluster$clustering
+
+#summary(data[data$cluster == 1, ])
+#summary(data[data$cluster == 2, ])
+#summary(data[data$cluster == 3, ])
 
