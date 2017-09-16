@@ -91,3 +91,7 @@ data["cluster"] <- data_cluster$clustering
 #summary(data[data$cluster == 2, ])
 #summary(data[data$cluster == 3, ])
 
+
+
+
+
