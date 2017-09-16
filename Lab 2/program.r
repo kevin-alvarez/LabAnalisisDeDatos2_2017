@@ -87,9 +87,30 @@ plot_groups <- ggplot(data.frame(tsne$Y), aes(x = X1, y = X2))+labs(x = "X", y =
 #Adding a new column with the cluster number
 data["cluster"] <- data_cluster$clustering
 
-#summary(data[data$cluster == 1, ])
-#summary(data[data$cluster == 2, ])
-#summary(data[data$cluster == 3, ])
+#cluster summary
+sum_c1 <- summary(data[data$cluster == 1, ])
+sum_c2 <- summary(data[data$cluster == 2, ])
+sum_c3 <- summary(data[data$cluster == 3, ])
+
+#Clustering using only continuous variables
+datac <- data[c(1, 17:21)]
+#Calculating Dissimilarity with Euclidean Distance
+datac_dist <- daisy(datac, metric = "euclidean")
+
+#Clustering [k = 3]
+datac_cluster <- pam(datac_dist, diss = TRUE, k = 3)
+
+#t-SNE plot
+tsne_c <- Rtsne(datac_dist, is_distance = TRUE)
+plot_groupsc <- ggplot(data.frame(tsne_c$Y), aes(x = X1, y = X2))+labs(x = "X", y = "Y")+geom_point(color = factor(datac_cluster$clustering))
+
+#Adding a new column with the cluster number
+datac["cluster"] <- datac_cluster$clustering
+
+#cluster summary
+sumc_c1 <- summary(datac[datac$cluster == 1, ])
+sumc_c2 <- summary(datac[datac$cluster == 2, ])
+sumc_c3 <- summary(datac[datac$cluster == 3, ])
 
 
 
