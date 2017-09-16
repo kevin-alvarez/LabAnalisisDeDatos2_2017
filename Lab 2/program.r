@@ -1,4 +1,6 @@
 library("cluster")
+library("ggplot2")
+library("Rtsne")
 
 rawdata <- read.csv("allhypo.data", header = FALSE, sep = ",", stringsAsFactors = FALSE)
 colnames(rawdata) <- c("age", "sex", "on.thyroxine", "query.on.thyroxine", "on.antithyroid.medication", "sick", "pregnant", "thyroid.surgery", "I131.treatment", "query.hypothyroid", "query.hyperthyroid", "lithium", "goitre", "tumor", "hypopituitary", "psych", "TSH.measured", "TSH", "T3.measured", "T3", "TT4.measured", "TT4", "T4U.measured", "T4U", "FTI.measured", "FTI", "TBG.measured", "TBG", "referral.source", "clasification|id")
@@ -66,7 +68,19 @@ data <- subset(data, (age <= 100) & (TSH <= TSHMAX) & (T3 <= T3MAX) & (TT4 <= TT
 #Calculating Dissimilarity with Gower Distance
 data_dist <- daisy(data, metric = "gower")
 
+#Calculating optimal number of groups with Silhouette width
+sil <- c()
+for (i in 2:15){
+  fit <- pam(data_dist, diss = TRUE, k = i)
+  sil[i] <- fit$silinfo$avg.width
+}
 
-#groups <- 6
-#cluster <- pam(rawdata, groups, metric = "euclidean")
+clust_num_plot <- ggplot(data.frame(clust_num = 2:15, sil_width = sil[2:15]), aes(x = clust_num, y = sil_width))+labs(x = "Number of Clusters", y = "Silhouette Width")+geom_line(color = "blue")+geom_point(color = "blue")+ggtitle("Number of Clusters vs Silhouette Width")+theme_minimal()+theme(plot.title = element_text(hjust = 0.5))
+
+#Clustering [k = 3]
+data_cluster <- pam(data_dist, diss = TRUE, k = 3)
+
+#t-SNE plot
+tsne <- Rtsne(data_dist, is_distance = TRUE)
+ggplot(data.frame(tsne$Y), aes(x = X1, y = X2))+labs(x = "X", y = "Y")+geom_point(color = factor(data_cluster$clustering))
 
