@@ -13,31 +13,23 @@ for(i in rawdata$`clasification|id`){
 colnames(rawdata)[30] <- "clasification"
 rawdata$clasification <- as.factor(d)
 
-#Data pre-processing
+#data pre-processing
 #delete NA values
 data <- rawdata[(rawdata$age!="?" & rawdata$sex!="?" & rawdata$on.thyroxine!="?" & rawdata$query.on.thyroxine!="?" & rawdata$on.antithyroid.medication!="?" & rawdata$sick!="?" & rawdata$pregnant!="?" & rawdata$thyroid.surgery!="?" & rawdata$I131.treatment!="?" & rawdata$query.hypothyroid!="?" & rawdata$query.hyperthyroid!="?" & rawdata$lithium!="?" & rawdata$goitre!="?" & rawdata$tumor!="?" & rawdata$hypopituitary!="?" & rawdata$psych!="?" & rawdata$TSH.measured!="f" & rawdata$T3.measured!="f" & rawdata$TT4.measured!="f" & rawdata$T4U.measured!="f" & rawdata$FTI.measured!="f"),]
-#Delete variable TBG
+#delete variable TBG
 data$TBG.measured <- NULL
 data$TBG <- NULL
-#Delete measuring variables
+#delete measuring variables
 data$TSH.measured <- NULL
 data$T3.measured <- NULL
 data$TT4.measured <- NULL
 data$T4U.measured <- NULL
 data$FTI.measured <- NULL
-#Delete referral.source variable
+#delete referral.source variable
 data$referral.source <- NULL
 
-#Deleting continuous variables
-#data$age <-NULL
-#data$TSH <- NULL
-#data$T3 <- NULL
-#data$TT4 <- NULL
-#data$T4U <- NULL
-#data$FTI <- NULL
-
-#Data format transform
-#Nominal variables
+#data format transform
+#nominal variables
 data$sex <- as.factor(data$sex)
 data$on.thyroxine <- as.factor(data$on.thyroxine)
 data$query.on.thyroxine <- as.factor(data$query.on.thyroxine)
@@ -54,48 +46,118 @@ data$tumor <- as.factor(data$tumor)
 data$hypopituitary <- as.factor(data$hypopituitary)
 data$psych <- as.factor(data$psych)
 
-data$age <-as.factor(data$age)
-data$TSH <- as.factor(data$TSH)
-data$T3 <- as.factor(data$T3)
-data$TT4 <- as.factor(data$TT4)
-data$T4U <- as.factor(data$T4U)
-data$FTI <- as.factor(data$FTI)
+#continuous variables
+data$age <-as.numeric(data$age)
+data$TSH <- as.numeric(data$TSH)
+data$T3 <- as.numeric(data$T3)
+data$TT4 <- as.numeric(data$TT4)
+data$T4U <- as.numeric(data$T4U)
+data$FTI <- as.numeric(data$FTI)
 
-# Data selection - set max value for detection of data anomalies
-#TSHMAX <- 4.0 + abs(0.4 - 4.0) * 2
-#T3MAX <-  3.37 + abs(1.07 - 3.37) * 2
-#TT4MAX <- 164 + abs(64 - 164) * 2
-#T4UMAX <- 1.8 + abs(0.7 - 1.8) * 2
-#FTIMAX <- 1.8 + abs(33.108 - 135.191) * 2
-#data <- subset(data, (age <= 100) & (TSH <= TSHMAX) & (T3 <= T3MAX) & (TT4 <= TT4MAX) & (T4U <= T4UMAX) & (FTI <= FTIMAX))
+#continuous variables and clasification to binary 
+#age values
+child.adult_border <- 18
+adult.oldman_border <- 60
+#min values
+TSH.min <- 0.4
+T3.min <- 1.07
+TT4.min <- 64.0
+T4U.min <- 0.7
+FTI.min <- 33.108
+#max values
+TSH.max <- 4.0
+T3.max <- 3.37
+TT4.max <- 154.0
+T4U.max <- 1.8
+FTI.max <- 135.191
 
-d <- c()
-for(i in data$clasification){
-  if(i == "negative"){
-    d <- c(d, 0)
-  }else if(i == "primary hypothyroid"){
-    d <- c(d, 1)
-  }else if(i == "secondary hypothyroid"){
-    d <- c(d, 2)
-  }else if(i == "compensated hypothyroid"){
-    d <- c(d, 3)
+#vectors(zeros)
+child <- integer(length(data[[1]]))
+adult <- integer(length(data[[1]]))
+oldman <- integer(length(data[[1]]))
+TSH.under <- integer(length(data[[1]]))
+T3.under <- integer(length(data[[1]]))
+TT4.under <- integer(length(data[[1]]))
+T4U.under <- integer(length(data[[1]]))
+FTI.under <- integer(length(data[[1]]))
+TSH.over <- integer(length(data[[1]]))
+T3.over <- integer(length(data[[1]]))
+TT4.over <- integer(length(data[[1]]))
+T4U.over <- integer(length(data[[1]]))
+FTI.over <- integer(length(data[[1]]))
+
+#change data to binary
+for(i in 1:length(data[[1]])){
+  #age
+  if(data$age[i] < child.adult_border){
+    child[i] <- 1
+  }else if(data$age[i] >= child.adult_border & data$age[i] < adult.oldman_border){
+    adult[i] <- 1
+  }else if(data$age[i] >= adult.oldman_border){
+    oldman[i] <- 1
+  }
+  #hormones
+  if(data$TSH[i] >= TSH.max){
+    TSH.over[i] <- 1
+  }else if(data$TSH[i] <= TSH.min){
+    TSH.under[i] <- 1
+  }
+  if(data$T3[i] >= T3.max){
+    T3.over[i] <- 1
+  }else if(data$T3[i] <= T3.min){
+    T3.under[i] <- 1
+  }
+  if(data$TT4[i] >= TT4.max){
+    TT4.over[i] <- 1
+  }else if(data$TT4[i] <= TT4.min){
+    TT4.under[i] <- 1
+  }
+  if(data$T4U[i] >= T4U.max){
+    T4U.over[i] <- 1
+  }else if(data$T4U[i] <= T4U.min){
+    T4U.under[i] <- 1
+  }
+  if(data$FTI[i] >= FTI.max){
+    FTI.over[i] <- 1
+  }else if(data$FTI[i] <= FTI.min){
+    FTI.under[i] <- 1
   }
 }
-data$clasification <- as.factor(d)
+
+data$clasification <- ifelse(data$clasification %in% c("primary hypothyroid", "secondary hypothyroid", "compensated hypothyroid"), 1, 0)
+
+#replace vectors on data frame
+data$age <- NULL
+data$TSH <- NULL
+data$T3 <- NULL
+data$TT4 <- NULL
+data$T4U <- NULL
+data$FTI <- NULL
+data$age.child <- as.factor(child)
+data$age.adult <- as.factor(adult)
+data$age.oldman <- as.factor(oldman)
+data$TSH.over <- as.factor(TSH.over)
+data$T3.over <- as.factor(T3.over)
+data$TT4.over <- as.factor(TT4.over)
+data$T4U.over <- as.factor(T4U.over)
+data$FTI.over <- as.factor(FTI.over)
+data$TSH.under <- as.factor(TSH.under)
+data$T3.under <- as.factor(T3.under)
+data$TT4.under <- as.factor(TT4.under)
+data$T4U.under <- as.factor(T4U.under)
+data$FTI.under <- as.factor(FTI.under)
+data$clasification <- as.factor(data$clasification)
+names(data)[names(data) == "clasification"] <- "hypothyroid"
 
 #rules without restrictions, with min 2 antecedents and 1 consecuent [support=0.5, Confidence=0.8]
-rules <- apriori(data, parameter = list(minlen=3, support=0.3, confidence=0.8, target="rules"))
-
-#rules with class restrinction, with min 2 antecedents and 1 consecuent [support=0.5, Confidence=0.8]
-rules_rest <- apriori(data, parameter = list(minlen=3, support=0.5, confidence=0.8, target="rules"), appearance = list(rhs=c("clasification=0", "clasification=1", "clasification=2", "clasification=3"), default="lhs"))
-#rules_rest <- apriori(data, parameter = list(minlen=2, support=0.1, confidence=0.5, target="rules"), appearance = list(rhs=c("sex=F", "sex=M"), default="lhs"))
+rules <- apriori(data, parameter = list(minlen=2, support=0.01, confidence=0.5, maxlen=5), appearance = list(rhs=c("hypothyroid=1"), default="lhs"))
 
 #sort rules
-rules_sorted <- sort(rules_rest, by="confidence")
-inspect(head(rules_sorted, 100))
+rules.sorted <- sort(rules, by="lift")
+inspect(head(rules.sorted, 100))
 
-#Clean Redundant Rules (No funciona con datasets grandes)
-subset.matrix<-is.subset(rules_ord,rules_ord)
-subset.matrix[lower.tri(subset.matrix,diag=T)]<-NA
-redundant<-colSums(subset.matrix,na.rm = T)>=1
-rules_notRed<-rules_ord[!redundant]
+#Clean Redundant Rules
+#subset.matrix<-is.subset(rules.sorted,rules.sorted)
+#subset.matrix[lower.tri(subset.matrix,diag=T)]<-NA
+#redundant<-colSums(subset.matrix,na.rm = T)>=1
+#rules.notRed<-rules.sorted[!redundant]
