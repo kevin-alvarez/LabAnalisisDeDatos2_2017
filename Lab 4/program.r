@@ -1,4 +1,4 @@
-# Naive Bayes Clasificator
+# Naive Bayes Classifier
 library("e1071")
 
 preprocessing <- function(rawdata){
