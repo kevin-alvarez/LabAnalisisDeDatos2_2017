@@ -1,7 +1,4 @@
-# Clasificador bayesiano ingenuo - naiveBayes
-# Clasifica clases preestablecidas
-# No tiene requerimientos para las variables
-
+# Naive Bayes Clasificator
 library("e1071")
 
 preprocessing <- function(rawdata){
