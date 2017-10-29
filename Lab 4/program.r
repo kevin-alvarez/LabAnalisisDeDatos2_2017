@@ -73,7 +73,9 @@ results <- predict(object = model, newdata=data_test, type = "class")
 #Confusion Matrix - Predicted vs Trained
 cm <- table(results,data_test$clasification)
 
-#Percentage of hit
-hit <- 100 * sum(diag(cm)) / sum(cm)
-hit
+#Percentage of hit (Accuracy)
+overall_accuracy <- sum(diag(cm)) / sum(cm)
+pv_compensated <- sum(cm[1,1]) / sum(cm[1,])
+pv_negative <- sum(cm[2,2]) / sum(cm[2,])
+pv_primary <- sum(cm[3,3]) / sum(cm[3,])
 
