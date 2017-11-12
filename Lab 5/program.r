@@ -1,5 +1,5 @@
 # Árboles de decisión
-library(party)
+library(C50)
 
 preprocessing <- function(rawdata){
   #delete id from clasification|id column
@@ -49,15 +49,18 @@ preprocessing <- function(rawdata){
   data$TT4 <- as.numeric(data$TT4)
   data$T4U <- as.numeric(data$T4U)
   data$FTI <- as.numeric(data$FTI)
-  # Conversión de diagnostico a varible logica:
-  data$clasification <- (data$clasification == "hyperthyroid.")
   
-  # Discretización de las variables
+  #Discretización de las variables
   data$age <- cut(data$age, breaks =  seq(0,100,20))
   data$TSH <- cut(data$TSH, breaks =  c(0, 0.5, 4.7, Inf), labels = c("Inf", "Nor", "Sup"))
   data$T3 <- cut(data$T3, breaks =  c(0, 0.9, 2.8, Inf), labels = c("Inf", "Nor", "Sup"))
   data$TT4 <- cut(data$TT4, breaks =  c(0, 58, 161, Inf), labels = c("Inf", "Nor", "Sup"))
   data$T4U <- cut(data$T4U, breaks =  c(0, 0.8, 1.3, Inf), labels = c("Inf", "Nor", "Sup"))
+  
+  #Set binary clasification
+  data$clasification <- ifelse(data$clasification %in% c("primary hypothyroid", "secondary hypothyroid", "compensated hypothyroid"), 1, 0)
+  data$clasification <- as.factor(data$clasification)
+  names(data)[names(data) == "clasification"] <- "hypothyroid"
   
   return(data)
 }
@@ -66,18 +69,22 @@ preprocessing <- function(rawdata){
 rawdata <- read.csv("allhypo.data", header = FALSE, sep = ",", stringsAsFactors = FALSE)
 colnames(rawdata) <- c("age", "sex", "on.thyroxine", "query.on.thyroxine", "on.antithyroid.medication", "sick", "pregnant", "thyroid.surgery", "I131.treatment", "query.hypothyroid", "query.hyperthyroid", "lithium", "goitre", "tumor", "hypopituitary", "psych", "TSH.measured", "TSH", "T3.measured", "T3", "TT4.measured", "TT4", "T4U.measured", "T4U", "FTI.measured", "FTI", "TBG.measured", "TBG", "referral.source", "clasification|id")
 
-#Preprocessing for both data, train and test
-dataHypo <- preprocessing(rawdata)
+#Preprocessing for data
+data <- preprocessing(rawdata)
+data_tree <- subset(data, select = -hypothyroid)
+data_class <- subset(data, select = hypothyroid)$hypothyroid
 
-#Árboles
-str(dataHypo)
 
-png(file = "arbol_decision.png")
+#Model
+model <-C5.0(data_tree, data_class)
 
-output.tree <- ctree(
-  clasification ~ age+sex+on.thyroxine+query.on.thyroxine+on.antithyroid.medication+sick+pregnant+thyroid.surgery+I131.treatment+query.hypothyroid+query.hyperthyroid+lithium+goitre+tumor+hypopituitary+psych+TSH+T3+TT4+T4U, 
-  data = dataHypo)
+#Tree plot
+tree <- plot(model)
 
-plot(output.tree)
+#output.tree <- ctree(
+#  clasification ~ age+sex+on.thyroxine+query.on.thyroxine+on.antithyroid.medication+sick+pregnant+thyroid.surgery+I131.treatment+query.hypothyroid+query.hyperthyroid+lithium+goitre+tumor+hypopituitary+psych+TSH+T3+TT4+T4U, 
+#  data = dataHypo)
 
-dev.off()
+#plot(output.tree)
+
+#dev.off()
