@@ -1,5 +1,7 @@
 # Árboles de decisión
-library(party)
+library(C50)
+library(rpart)
+library(rpart.plot) 
 
 preprocessing <- function(rawdata){
   #delete id from clasification|id column
@@ -63,21 +65,25 @@ preprocessing <- function(rawdata){
 }
 
 #Data read
-rawdata <- read.csv("allhypo.data", header = FALSE, sep = ",", stringsAsFactors = FALSE)
-colnames(rawdata) <- c("age", "sex", "on.thyroxine", "query.on.thyroxine", "on.antithyroid.medication", "sick", "pregnant", "thyroid.surgery", "I131.treatment", "query.hypothyroid", "query.hyperthyroid", "lithium", "goitre", "tumor", "hypopituitary", "psych", "TSH.measured", "TSH", "T3.measured", "T3", "TT4.measured", "TT4", "T4U.measured", "T4U", "FTI.measured", "FTI", "TBG.measured", "TBG", "referral.source", "clasification|id")
+rawdata_train <- read.csv("allhypo.data", header = FALSE, sep = ",", stringsAsFactors = FALSE)
+colnames(rawdata_train) <- c("age", "sex", "on.thyroxine", "query.on.thyroxine", "on.antithyroid.medication", "sick", "pregnant", "thyroid.surgery", "I131.treatment", "query.hypothyroid", "query.hyperthyroid", "lithium", "goitre", "tumor", "hypopituitary", "psych", "TSH.measured", "TSH", "T3.measured", "T3", "TT4.measured", "TT4", "T4U.measured", "T4U", "FTI.measured", "FTI", "TBG.measured", "TBG", "referral.source", "clasification|id")
+
+rawdata_test <- read.csv("allhypo.test", header = FALSE, sep = ",", stringsAsFactors = FALSE)
+colnames(rawdata_test) <- c("age", "sex", "on.thyroxine", "query.on.thyroxine", "on.antithyroid.medication", "sick", "pregnant", "thyroid.surgery", "I131.treatment", "query.hypothyroid", "query.hyperthyroid", "lithium", "goitre", "tumor", "hypopituitary", "psych", "TSH.measured", "TSH", "T3.measured", "T3", "TT4.measured", "TT4", "T4U.measured", "T4U", "FTI.measured", "FTI", "TBG.measured", "TBG", "referral.source", "clasification|id")
 
 #Preprocessing for both data, train and test
-dataHypo <- preprocessing(rawdata)
+data_train <- preprocessing(rawdata_train)
+data_test <- preprocessing(rawdata_test)
 
 #Árboles
-str(dataHypo)
 
-png(file = "arbol_decision.png")
+ModeloArbol<-rpart(clasification ~ ., data_train )
 
-output.tree <- ctree(
-  clasification ~ age+sex+on.thyroxine+query.on.thyroxine+on.antithyroid.medication+sick+pregnant+thyroid.surgery+I131.treatment+query.hypothyroid+query.hyperthyroid+lithium+goitre+tumor+hypopituitary+psych+TSH+T3+TT4+T4U, 
-  data = dataHypo)
+Prediccion <- predict(ModeloArbol, data_test) # Prediccción en Test
+MC         <- table(data_test[, "clasification"],Prediccion) # Matriz de Confusión
 
-plot(output.tree)
+# PASO 4: Crea Grafico
+# ---------------------------------------------------------------------------
+rpart.plot(ModeloArbol, type=1, extra=100,cex = .7,
+           box.col=c("gray99", "gray88")[ModeloArbol$frame$yval])
 
-dev.off()
