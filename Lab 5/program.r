@@ -50,7 +50,7 @@ preprocessing <- function(rawdata){
   data$T4U <- as.numeric(data$T4U)
   data$FTI <- as.numeric(data$FTI)
   # Conversión de diagnostico a varible logica:
-  data$diagnostico <- (data$diagnostico == "hyperthyroid.")
+  data$clasification <- (data$clasification == "hyperthyroid.")
   
   # Discretización de las variables
   data$age <- cut(data$age, breaks =  seq(0,100,20))
@@ -75,7 +75,7 @@ str(dataHypo)
 png(file = "arbol_decision.png")
 
 output.tree <- ctree(
-  diagnostico ~ age+sex+on.thyroxine+query.on.thyroxine+on.antithyroid.medication+sick+pregnant+thyroid.surgery+I131.treatment+query.hypothyroid+query.hyperthyroid+lithium+goitre+tumor+hypopituitary+psych+TSH.measured+TSH+T3.measured+T3+TT4.measured+TT4+T4U.measured+T4U, 
+  clasification ~ age+sex+on.thyroxine+query.on.thyroxine+on.antithyroid.medication+sick+pregnant+thyroid.surgery+I131.treatment+query.hypothyroid+query.hyperthyroid+lithium+goitre+tumor+hypopituitary+psych+TSH+T3+TT4+T4U, 
   data = dataHypo)
 
 plot(output.tree)
